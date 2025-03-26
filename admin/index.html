@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Database Admin Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✨ Anime Database Admin Panel</h1>
+            <div class="auth-section">
+                <input type="text" id="apiKey" placeholder="Enter API Key">
+                <button id="authButton" class="primary-btn">Authenticate</button>
+                <span id="authStatus"></span>
+            </div>
+        </header>
+
+        <nav>
+            <button class="tab-button active" data-tab="anime">Anime</button>
+            <button class="tab-button" data-tab="episodes">Episodes</button>
+            <button class="tab-button" data-tab="bulk">Bulk Operations</button>
+        </nav>
+
+        <main>
+            <!-- Anime Tab -->
+            <section id="anime" class="tab-content active">
+                <div class="header-actions">
+                    <h2>Anime List</h2>
+                    <button id="addAnimeBtn" class="primary-btn">+ Add New Anime</button>
+                </div>
+                <div class="search-bar">
+                    <input type="text" id="animeSearch" placeholder="Search anime...">
+                    <select id="animeGenreFilter">
+                        <option value="">All Genres</option>
+                    </select>
+                    <button id="animeSearchBtn">Search</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Thumbnail</th>
+                                <th>Title</th>
+                                <th>Genre</th>
+                                <th>Created</th>
+                                <th>Updated</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="animeTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="animePagination"></div>
+            </section>
+
+            <!-- Episodes Tab -->
+            <section id="episodes" class="tab-content">
+                <div class="header-actions">
+                    <h2>Episodes List</h2>
+                    <button id="addEpisodeBtn" class="primary-btn">+ Add New Episode</button>
+                </div>
+                <div class="search-bar">
+                    <input type="text" id="episodeSearch" placeholder="Search episodes...">
+                    <select id="animeFilter">
+                        <option value="">All Anime</option>
+                    </select>
+                    <button id="episodeSearchBtn">Search</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Thumbnail</th>
+                                <th>Anime</th>
+                                <th>Episode</th>
+                                <th>Title</th>
+                                <th>Video Quality</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="episodeTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="episodePagination"></div>
+            </section>
+
+            <!-- Bulk Operations Tab -->
+            <section id="bulk" class="tab-content">
+                <div class="header-actions">
+                    <h2>Bulk Operations</h2>
+                </div>
+                <div class="bulk-container">
+                    <div class="form-group">
+                        <label for="bulkResource">Resource:</label>
+                        <select id="bulkResource">
+                            <option value="anime">Anime</option>
+                            <option value="episodes">Episodes</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="bulkOperation">Operation:</label>
+                        <select id="bulkOperation">
+                            <option value="create">Create</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="bulkData">JSON Data:</label>
+                        <textarea id="bulkData" rows="10" placeholder="Enter JSON array of items"></textarea>
+                    </div>
+                    <button id="bulkSubmitBtn" class="primary-btn">Submit Bulk Operation</button>
+                    <div id="bulkResults" class="results-container"></div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Anime Database Admin Panel &copy; 2023</p>
+        </footer>
+    </div>
+
+    <!-- Modal for adding/editing anime -->
+    <div id="animeModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="animeModalTitle">Add New Anime</h2>
+            <form id="animeForm">
+                <input type="hidden" id="animeId">
+                <div class="form-group">
+                    <label for="animeTitle">Title:</label>
+                    <input type="text" id="animeTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="animeThumbnail">Thumbnail URL:</label>
+                    <input type="url" id="animeThumbnail" required>
+                </div>
+                <div class="form-group">
+                    <label for="animeGenre">Genre:</label>
+                    <input type="text" id="animeGenre" required>
+                </div>
+                <div class="form-group">
+                    <label for="animeDescription">Description:</label>
+                    <textarea id="animeDescription" rows="4"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="primary-btn">Save</button>
+                    <button type="button" class="secondary-btn close-btn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for adding/editing episodes -->
+    <div id="episodeModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="episodeModalTitle">Add New Episode</h2>
+            <form id="episodeForm">
+                <input type="hidden" id="episodeId">
+                <div class="form-group">
+                    <label for="episodeAnimeId">Anime:</label>
+                    <select id="episodeAnimeId" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="episodeTitle">Title:</label>
+                    <input type="text" id="episodeTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="episodeNumber">Episode Number:</label>
+                    <input type="number" id="episodeNumber" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="episodeThumbnail">Thumbnail URL:</label>
+                    <input type="url" id="episodeThumbnail" required>
+                </div>
+                <div class="form-group">
+                    <label for="episodeUrl480p">Video URL (480p):</label>
+                    <input type="url" id="episodeUrl480p">
+                </div>
+                <div class="form-group">
+                    <label for="episodeUrl720p">Video URL (720p):</label>
+                    <input type="url" id="episodeUrl720p">
+                </div>
+                <div class="form-group">
+                    <label for="episodeUrl1080p">Video URL (1080p):</label>
+                    <input type="url" id="episodeUrl1080p">
+                </div>
+                <div class="form-group">
+                    <label for="episodeUrlMax">Video URL (Max Quality):</label>
+                    <input type="url" id="episodeUrlMax" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="primary-btn">Save</button>
+                    <button type="button" class="secondary-btn close-btn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content confirm-content">
+            <h2>Confirm Delete</h2>
+            <p id="confirmMessage"></p>
+            <div class="form-actions">
+                <button id="confirmYes" class="danger-btn">Yes, Delete</button>
+                <button id="confirmNo" class="secondary-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/script.js"></script>
+</body>
+</html>
